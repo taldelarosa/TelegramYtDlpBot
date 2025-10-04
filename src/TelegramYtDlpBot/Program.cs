@@ -73,6 +73,13 @@ builder.Services.AddHostedService(sp =>
     return new DownloadWorker(monitor, urlExtractor, queue, executor, logger, botConfig.Storage.DownloadPath);
 });
 
+// Register health check endpoint
+builder.Services.AddHostedService(sp =>
+{
+    var logger = sp.GetRequiredService<ILogger<HealthCheckService>>();
+    return new HealthCheckService(logger, port: 8080);
+});
+
 // Build and run
 var app = builder.Build();
 
