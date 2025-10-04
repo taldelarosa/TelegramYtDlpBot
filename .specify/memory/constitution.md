@@ -1,50 +1,58 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report:
+- Version change: none → 1.0.0 (initial constitution)
+- Added principles: Test-Driven Development, Code Quality Standards, Security First, Performance Requirements, User Experience Consistency
+- Added sections: Technology Standards, Development Workflow
+- Templates requiring updates:
+  ✅ plan-template.md - Updated Constitution Check section with concrete principles, updated version reference to v1.0.0
+  ✅ spec-template.md - Already aligned (testable requirements, security, performance considerations present)
+  ✅ tasks-template.md - Already aligned (TDD workflow, security tasks, performance tests present)
+  ✅ agent-file-template.md - Template structure supports constitutional requirements
+- Command prompts reviewed:
+  ✅ plan.prompt.md - References constitution.md correctly
+  ✅ All other command prompts - No updates needed
+- Follow-up TODOs: none
+-->
+
+# TelegramYtDlpBot Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Test-Driven Development (NON-NEGOTIABLE)
+TDD is mandatory for all code changes. Tests MUST be written before implementation begins. The Red-Green-Refactor cycle is strictly enforced: write failing tests, implement minimal code to pass, then refactor for quality. No code may be merged without corresponding tests that validate its behavior and edge cases.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+**Rationale**: TDD ensures design quality, prevents regressions, and provides living documentation of system behavior.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### II. Code Quality Standards
+All C# code MUST follow established coding conventions and pass static analysis. PowerShell scripts MUST use approved verbs, proper error handling, and parameter validation. Code MUST be self-documenting with clear naming, appropriate comments for complex logic, and consistent formatting. All public APIs require XML documentation.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+**Rationale**: Consistent, readable code reduces maintenance burden and enables effective collaboration.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### III. Security First
+NO secrets, API keys, tokens, or sensitive configuration SHALL be committed to version control. Use environment variables, secure configuration providers, or external secret management systems. All external inputs MUST be validated and sanitized. Authentication and authorization MUST be implemented for all bot commands that modify state or access sensitive data.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+**Rationale**: Security vulnerabilities can expose user data and compromise system integrity. Prevention is cheaper than remediation.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### IV. Performance Requirements
+Bot responses MUST complete within 5 seconds for standard operations and 30 seconds for media downloads. Memory usage MUST be monitored and bounded to prevent resource exhaustion. Database queries MUST be optimized and include appropriate indexes. Large file operations MUST use streaming and provide progress feedback.
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+**Rationale**: Poor performance directly impacts user experience and can lead to service timeouts or resource exhaustion.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+### V. User Experience Consistency
+Bot responses MUST use consistent command syntax, error messages, and feedback patterns. All operations MUST provide clear status updates and error explanations. Interactive commands MUST include help text and usage examples. User data and preferences MUST persist across sessions where applicable.
+
+**Rationale**: Consistent UX reduces user confusion and support burden while improving adoption and satisfaction.
+
+## Technology Standards
+
+C# code MUST target .NET 8 or later with nullable reference types enabled. PowerShell scripts MUST be compatible with PowerShell 7+ and follow PSScriptAnalyzer rules. All dependencies MUST be explicitly versioned and regularly updated for security patches. External API integrations MUST implement retry logic with exponential backoff and circuit breaker patterns.
+
+## Development Workflow
+
+All changes MUST be implemented on feature branches with descriptive names. Pull requests MUST include test coverage reports and pass all automated checks. Code reviews are REQUIRED and MUST verify adherence to all constitutional principles. Database schema changes MUST include migration scripts and rollback procedures.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This constitution supersedes all other development practices and coding standards. All pull requests and code reviews MUST verify compliance with these principles. Any deviation MUST be explicitly justified and documented. Amendments require team consensus and MUST include impact analysis and migration plan for existing code.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2025-10-04 | **Last Amended**: 2025-10-04
