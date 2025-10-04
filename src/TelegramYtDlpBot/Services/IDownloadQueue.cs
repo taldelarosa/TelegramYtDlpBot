@@ -1,3 +1,5 @@
+using TelegramYtDlpBot.Models;
+
 namespace TelegramYtDlpBot.Services;
 
 /// <summary>
@@ -46,33 +48,4 @@ public interface IDownloadQueue
     /// Get queue statistics.
     /// </summary>
     Task<QueueStats> GetStatsAsync(CancellationToken cancellationToken);
-}
-
-public class DownloadJob
-{
-    public Guid JobId { get; init; }
-    public long MessageId { get; init; }
-    public string Url { get; init; } = string.Empty;
-    public JobStatus Status { get; set; }
-    public DateTime CreatedAt { get; init; }
-    public DateTime? CompletedAt { get; set; }
-    public string? ErrorMessage { get; set; }
-    public string? OutputPath { get; set; }
-    public int RetryCount { get; set; }
-}
-
-public enum JobStatus
-{
-    Queued,
-    InProgress,
-    Completed,
-    Failed
-}
-
-public class QueueStats
-{
-    public int QueuedCount { get; init; }
-    public int InProgressCount { get; init; }
-    public int CompletedCount { get; init; }
-    public int FailedCount { get; init; }
 }

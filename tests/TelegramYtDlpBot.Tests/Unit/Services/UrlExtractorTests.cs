@@ -14,10 +14,11 @@ public class UrlExtractorTests
         const string text = "Check this out: https://example.com/video";
 
         // Act
-        var act = () => extractor.ExtractUrls(text);
+        var result = extractor.ExtractUrls(text);
 
         // Assert
-        act.Should().Throw<NotImplementedException>();
+        result.Should().ContainSingle();
+        result[0].Should().Be("https://example.com/video");
     }
 
     [Fact]
@@ -28,10 +29,12 @@ public class UrlExtractorTests
         const string text = "First: https://youtube.com/watch?v=abc Second: https://vimeo.com/123";
 
         // Act
-        var act = () => extractor.ExtractUrls(text);
+        var result = extractor.ExtractUrls(text);
 
         // Assert
-        act.Should().Throw<NotImplementedException>();
+        result.Should().HaveCount(2);
+        result.Should().Contain("https://youtube.com/watch?v=abc");
+        result.Should().Contain("https://vimeo.com/123");
     }
 
     [Fact]
@@ -42,10 +45,12 @@ public class UrlExtractorTests
         const string text = "https://example.com https://example.com https://other.com";
 
         // Act
-        var act = () => extractor.ExtractUrls(text);
+        var result = extractor.ExtractUrls(text);
 
         // Assert
-        act.Should().Throw<NotImplementedException>();
+        result.Should().HaveCount(2);
+        result.Should().Contain("https://example.com");
+        result.Should().Contain("https://other.com");
     }
 
     [Fact]
@@ -56,10 +61,10 @@ public class UrlExtractorTests
         const string text = "This text has no URLs at all";
 
         // Act
-        var act = () => extractor.ExtractUrls(text);
+        var result = extractor.ExtractUrls(text);
 
         // Assert
-        act.Should().Throw<NotImplementedException>();
+        result.Should().BeEmpty();
     }
 
     [Fact]
@@ -70,10 +75,11 @@ public class UrlExtractorTests
         const string text = "Good: https://example.com Bad: not-a-url Invalid: ftp://old.site";
 
         // Act
-        var act = () => extractor.ExtractUrls(text);
+        var result = extractor.ExtractUrls(text);
 
         // Assert
-        act.Should().Throw<NotImplementedException>();
+        result.Should().ContainSingle();
+        result[0].Should().Be("https://example.com");
     }
 
     [Fact]
@@ -84,10 +90,10 @@ public class UrlExtractorTests
         const string url = "http://example.com/video";
 
         // Act
-        var act = () => extractor.IsValidUrl(url);
+        var result = extractor.IsValidUrl(url);
 
         // Assert
-        act.Should().Throw<NotImplementedException>();
+        result.Should().BeTrue();
     }
 
     [Fact]
@@ -98,10 +104,10 @@ public class UrlExtractorTests
         const string url = "https://youtube.com/watch?v=dQw4w9WgXcQ";
 
         // Act
-        var act = () => extractor.IsValidUrl(url);
+        var result = extractor.IsValidUrl(url);
 
         // Assert
-        act.Should().Throw<NotImplementedException>();
+        result.Should().BeTrue();
     }
 
     [Fact]
@@ -112,10 +118,10 @@ public class UrlExtractorTests
         const string url = "ftp://files.example.com/video.mp4";
 
         // Act
-        var act = () => extractor.IsValidUrl(url);
+        var result = extractor.IsValidUrl(url);
 
         // Assert
-        act.Should().Throw<NotImplementedException>();
+        result.Should().BeFalse();
     }
 
     [Fact]
@@ -126,10 +132,10 @@ public class UrlExtractorTests
         const string url = "/relative/path/video";
 
         // Act
-        var act = () => extractor.IsValidUrl(url);
+        var result = extractor.IsValidUrl(url);
 
         // Assert
-        act.Should().Throw<NotImplementedException>();
+        result.Should().BeFalse();
     }
 
     [Fact]
@@ -140,9 +146,9 @@ public class UrlExtractorTests
         const string url = "ht!tp://mal formed .com";
 
         // Act
-        var act = () => extractor.IsValidUrl(url);
+        var result = extractor.IsValidUrl(url);
 
         // Assert
-        act.Should().Throw<NotImplementedException>();
+        result.Should().BeFalse();
     }
 }

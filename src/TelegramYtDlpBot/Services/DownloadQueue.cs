@@ -1,3 +1,5 @@
+using TelegramYtDlpBot.Models;
+
 namespace TelegramYtDlpBot.Services;
 
 public class DownloadQueue : IDownloadQueue
