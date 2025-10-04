@@ -43,3 +43,13 @@ bld/
 
 ## Development settings
 appsettings.Development.json
+
+## Application data
+downloads/
+data/
+*.db
+*.db-shm
+*.db-wal
+
+## Sensitive configuration (use appsettings.json.template instead)
+src/TelegramYtDlpBot/appsettings.json
