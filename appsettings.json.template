@@ -8,11 +8,8 @@
     "YtDlp": {
       "Mode": "Local",
       "ExecutablePath": "yt-dlp",
-      "RemoteApiUrl": "",
-      "RemoteApiKey": "",
       "Quality": "bestvideo+bestaudio/best",
       "OutputTemplate": "%(uploader)s/%(upload_date)s/%(title)s.%(ext)s",
-      "ConfigFilePath": "",
       "TimeoutMinutes": 60
     },
     "Storage": {
