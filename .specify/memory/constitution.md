@@ -1,16 +1,21 @@
 <!--
 Sync Impact Report:
-- Version change: none → 1.0.0 (initial constitution)
-- Added principles: Test-Driven Development, Code Quality Standards, Security First, Performance Requirements, User Experience Consistency
-- Added sections: Technology Standards, Development Workflow
+- Version change: 1.0.0 → 1.1.0 (MINOR - new governance requirement added)
+- Modified principles: Development Workflow - Added mandatory branch protection requirement
+- Changes summary:
+  * Added: "NO changes SHALL be committed directly to the main branch"
+  * Added: "all work MUST go through the branch and merge workflow"
+  * Added: "Each pull request MUST be merged into main only after approval"
+  * Added: Rationale explaining branch protection benefits
+- Added sections: none
+- Removed sections: none
 - Templates requiring updates:
-  ✅ plan-template.md - Updated Constitution Check section with concrete principles, updated version reference to v1.0.0
-  ✅ spec-template.md - Already aligned (testable requirements, security, performance considerations present)
-  ✅ tasks-template.md - Already aligned (TDD workflow, security tasks, performance tests present)
-  ✅ agent-file-template.md - Template structure supports constitutional requirements
+  ✅ plan-template.md - Already references feature branches appropriately
+  ✅ spec-template.md - Already uses feature branch workflow
+  ✅ tasks-template.md - No changes needed, execution context independent
+  ✅ agent-file-template.md - No changes needed
 - Command prompts reviewed:
-  ✅ plan.prompt.md - References constitution.md correctly
-  ✅ All other command prompts - No updates needed
+  ✅ All prompts - No updates needed, already work with feature branches
 - Follow-up TODOs: none
 -->
 
@@ -49,10 +54,12 @@ C# code MUST target .NET 8 or later with nullable reference types enabled. Power
 
 ## Development Workflow
 
-All changes MUST be implemented on feature branches with descriptive names. Pull requests MUST include test coverage reports and pass all automated checks. Code reviews are REQUIRED and MUST verify adherence to all constitutional principles. Database schema changes MUST include migration scripts and rollback procedures.
+All changes MUST be implemented on feature branches with descriptive names. NO changes SHALL be committed directly to the main branch - all work MUST go through the branch and merge workflow. Pull requests MUST include test coverage reports and pass all automated checks. Code reviews are REQUIRED and MUST verify adherence to all constitutional principles. Each pull request MUST be merged into main only after approval. Database schema changes MUST include migration scripts and rollback procedures.
+
+**Rationale**: Branch protection prevents accidental main branch corruption, ensures peer review, and maintains a clean, auditable history.
 
 ## Governance
 
 This constitution supersedes all other development practices and coding standards. All pull requests and code reviews MUST verify compliance with these principles. Any deviation MUST be explicitly justified and documented. Amendments require team consensus and MUST include impact analysis and migration plan for existing code.
 
-**Version**: 1.0.0 | **Ratified**: 2025-10-04 | **Last Amended**: 2025-10-04
+**Version**: 1.1.0 | **Ratified**: 2025-10-04 | **Last Amended**: 2025-10-04
