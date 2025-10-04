@@ -1,4 +1,6 @@
 using FluentAssertions;
+using Moq;
+using TelegramYtDlpBot.Persistence;
 using TelegramYtDlpBot.Services;
 using Xunit;
 
@@ -15,7 +17,8 @@ public class DownloadWorkflowTests
     {
         // Arrange
         // TODO: Setup in-memory SQLite, mock yt-dlp executor
-        var queue = new DownloadQueue();
+        var mockStateManager = new Mock<IStateManager>();
+        var queue = new DownloadQueue(mockStateManager.Object);
         var executor = new LocalYtDlpExecutor();
         var monitor = new TelegramMonitor();
         
@@ -49,7 +52,8 @@ public class DownloadWorkflowTests
     public async Task DownloadJob_WhenMultipleForSameMessage_ProcessesSequentially()
     {
         // Arrange
-        var queue = new DownloadQueue();
+        var mockStateManager = new Mock<IStateManager>();
+        var queue = new DownloadQueue(mockStateManager.Object);
         var executor = new LocalYtDlpExecutor();
         
         const long messageId = 12346;

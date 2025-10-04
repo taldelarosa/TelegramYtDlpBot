@@ -1,4 +1,6 @@
 using FluentAssertions;
+using Moq;
+using TelegramYtDlpBot.Persistence;
 using TelegramYtDlpBot.Services;
 using Xunit;
 
@@ -16,7 +18,8 @@ public class MessageProcessingWorkflowTests
         // Arrange
         // TODO: Setup in-memory SQLite, mock Telegram client
         var urlExtractor = new UrlExtractor();
-        var queue = new DownloadQueue();
+        var mockStateManager = new Mock<IStateManager>();
+        var queue = new DownloadQueue(mockStateManager.Object);
         var monitor = new TelegramMonitor();
         
         const string messageText = "Check out this video: https://youtube.com/watch?v=test";
@@ -48,7 +51,8 @@ public class MessageProcessingWorkflowTests
     {
         // Arrange
         var urlExtractor = new UrlExtractor();
-        var queue = new DownloadQueue();
+        var mockStateManager = new Mock<IStateManager>();
+        var queue = new DownloadQueue(mockStateManager.Object);
         
         const string messageText = "First: https://youtube.com/1 Second: https://vimeo.com/2";
         const long messageId = 12346;

@@ -1,4 +1,6 @@
 using FluentAssertions;
+using Moq;
+using TelegramYtDlpBot.Persistence;
 using TelegramYtDlpBot.Services;
 using Xunit;
 
@@ -13,7 +15,8 @@ public class ErrorHandlingWorkflowTests
     public async Task DownloadJob_WhenFails_MarksFailedAndAppliesErrorEmoji()
     {
         // Arrange
-        var queue = new DownloadQueue();
+        var mockStateManager = new Mock<IStateManager>();
+        var queue = new DownloadQueue(mockStateManager.Object);
         var executor = new LocalYtDlpExecutor();
         var monitor = new TelegramMonitor();
         
@@ -54,7 +57,8 @@ public class ErrorHandlingWorkflowTests
     public async Task DownloadJob_AfterMaxRetries_AppliesErrorEmoji()
     {
         // Arrange
-        var queue = new DownloadQueue();
+        var mockStateManager = new Mock<IStateManager>();
+        var queue = new DownloadQueue(mockStateManager.Object);
         var monitor = new TelegramMonitor();
         
         const long messageId = 12345;
@@ -87,7 +91,8 @@ public class ErrorHandlingWorkflowTests
     public async Task DownloadJob_WhenRetrySucceeds_AppliesCompleteEmoji()
     {
         // Arrange
-        var queue = new DownloadQueue();
+        var mockStateManager = new Mock<IStateManager>();
+        var queue = new DownloadQueue(mockStateManager.Object);
         var executor = new LocalYtDlpExecutor();
         var monitor = new TelegramMonitor();
         
