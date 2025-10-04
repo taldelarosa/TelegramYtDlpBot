@@ -18,8 +18,9 @@ public class TelegramMonitorTests
         // Act
         var act = async () => await monitor.StartMonitoringAsync(cts.Token);
 
-        // Assert
-        await act.Should().ThrowAsync<NotImplementedException>();
+        // Assert - Should throw InvalidOperationException when bot client is null
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("Bot client not initialized*");
     }
 
     [Fact]
@@ -32,8 +33,9 @@ public class TelegramMonitorTests
         // Act
         var act = async () => await monitor.StartMonitoringAsync(cts.Token);
 
-        // Assert
-        await act.Should().ThrowAsync<NotImplementedException>();
+        // Assert - Should throw InvalidOperationException when bot client is null
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("Bot client not initialized*");
     }
 
     [Fact]
@@ -46,8 +48,9 @@ public class TelegramMonitorTests
         // Act
         var act = async () => await monitor.StartMonitoringAsync(cts.Token);
 
-        // Assert
-        await act.Should().ThrowAsync<NotImplementedException>();
+        // Assert - Should throw InvalidOperationException when bot client is null
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("Bot client not initialized*");
     }
 
     [Fact]
@@ -60,10 +63,10 @@ public class TelegramMonitorTests
         using var cts = new CancellationTokenSource();
 
         // Act
-        var act = async () => await monitor.SetReactionAsync(messageId, emoji, cts.Token);
+        var result = await monitor.SetReactionAsync(messageId, emoji, cts.Token);
 
-        // Assert
-        await act.Should().ThrowAsync<NotImplementedException>();
+        // Assert - Should return false when bot client is null
+        result.Should().BeFalse();
     }
 
     [Fact]
@@ -76,10 +79,10 @@ public class TelegramMonitorTests
         using var cts = new CancellationTokenSource();
 
         // Act
-        var act = async () => await monitor.SetReactionAsync(invalidMessageId, emoji, cts.Token);
+        var result = await monitor.SetReactionAsync(invalidMessageId, emoji, cts.Token);
 
-        // Assert
-        await act.Should().ThrowAsync<NotImplementedException>();
+        // Assert - Should return false when bot client is null
+        result.Should().BeFalse();
     }
 
     [Fact]
@@ -92,10 +95,10 @@ public class TelegramMonitorTests
         using var cts = new CancellationTokenSource();
 
         // Act
-        var act = async () => await monitor.SetReactionAsync(messageId, emoji, cts.Token);
+        var result = await monitor.SetReactionAsync(messageId, emoji, cts.Token);
 
-        // Assert
-        await act.Should().ThrowAsync<NotImplementedException>();
+        // Assert - Should return false when bot client is null
+        result.Should().BeFalse();
     }
 
     [Fact]
@@ -105,9 +108,10 @@ public class TelegramMonitorTests
         var monitor = new TelegramMonitor();
 
         // Act
-        var act = () => monitor.IsConnected;
+        var result = monitor.IsConnected;
 
-        // Assert
-        act.Should().Throw<NotImplementedException>();
+        // Assert - Should return false when not connected
+        result.Should().BeFalse();
     }
 }
+
