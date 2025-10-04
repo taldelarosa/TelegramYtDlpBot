@@ -6,11 +6,19 @@ namespace TelegramYtDlpBot.Tests.Unit.Services;
 
 public class YtDlpExecutorTests
 {
+    // Get the path to yt-dlp.exe relative to the test project
+    private static string GetYtDlpPath()
+    {
+        // From tests/TelegramYtDlpBot.Tests/bin/Debug/net8.0 -> tools/yt-dlp.exe
+        var solutionDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
+        return Path.Combine(solutionDir, "tools", "yt-dlp.exe");
+    }
+
     [Fact]
     public async Task DownloadAsync_WithValidUrl_ReturnsFilePath()
     {
         // Arrange
-        var executor = new LocalYtDlpExecutor();
+        var executor = new LocalYtDlpExecutor(GetYtDlpPath());
         const string url = "https://example.com/video";
         var outputPath = Path.Combine(Path.GetTempPath(), "ytdlp-test-" + Guid.NewGuid());
         using var cts = new CancellationTokenSource();
@@ -31,10 +39,10 @@ public class YtDlpExecutorTests
     public async Task DownloadAsync_WithInvalidUrl_ThrowsYtDlpException()
     {
         // Arrange
-        var executor = new LocalYtDlpExecutor();
-        const string url = "https://invalid-url-that-does-not-exist.com/video";
+        var executor = new LocalYtDlpExecutor(GetYtDlpPath());
+        const string url = "not-a-valid-url-at-all";
         var outputPath = Path.Combine(Path.GetTempPath(), "ytdlp-test-" + Guid.NewGuid());
-        using var cts = new CancellationTokenSource();
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30)); // Timeout to avoid hanging
 
         // Act
         var act = async () => await executor.DownloadAsync(url, outputPath, cts.Token);
@@ -50,7 +58,7 @@ public class YtDlpExecutorTests
     public async Task DownloadAsync_WithTimeout_ThrowsOperationCanceledException()
     {
         // Arrange
-        var executor = new LocalYtDlpExecutor();
+        var executor = new LocalYtDlpExecutor(GetYtDlpPath());
         const string url = "https://example.com/very-large-file";
         var outputPath = Path.Combine(Path.GetTempPath(), "ytdlp-test-" + Guid.NewGuid());
         using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(1));
@@ -69,7 +77,7 @@ public class YtDlpExecutorTests
     public async Task DownloadAsync_WithCancellation_ThrowsOperationCanceledException()
     {
         // Arrange
-        var executor = new LocalYtDlpExecutor();
+        var executor = new LocalYtDlpExecutor(GetYtDlpPath());
         const string url = "https://example.com/video";
         var outputPath = Path.Combine(Path.GetTempPath(), "ytdlp-test-" + Guid.NewGuid());
         using var cts = new CancellationTokenSource();
@@ -89,7 +97,7 @@ public class YtDlpExecutorTests
     public async Task HealthCheck_WithValidExecutable_ReturnsTrue()
     {
         // Arrange
-        var executor = new LocalYtDlpExecutor();
+        var executor = new LocalYtDlpExecutor(GetYtDlpPath());
         using var cts = new CancellationTokenSource();
 
         // Act

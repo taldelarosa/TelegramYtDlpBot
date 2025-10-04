@@ -66,6 +66,9 @@ public class LocalYtDlpExecutor : IYtDlpExecutor
 
         try
         {
+            // Check cancellation before starting process
+            cancellationToken.ThrowIfCancellationRequested();
+            
             process.Start();
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
@@ -93,10 +96,17 @@ public class LocalYtDlpExecutor : IYtDlpExecutor
         }
         catch (OperationCanceledException)
         {
-            // Kill process if cancellation requested
-            if (!process.HasExited)
+            // Kill process if cancellation requested and process was started
+            try
             {
-                try { process.Kill(entireProcessTree: true); } catch { /* Best effort */ }
+                if (!process.HasExited)
+                {
+                    process.Kill(entireProcessTree: true);
+                }
+            }
+            catch
+            {
+                // Best effort - process may not have started or already exited
             }
             throw;
         }
