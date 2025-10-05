@@ -1,9 +1,9 @@
 <!--
 Sync Impact Report:
-- Version change: 1.1.0 → 1.2.0 (MINOR - new deployment standards and Git Flow workflow)
+- Version change: 1.1.0 → 1.2.0 (MINOR - new deployment standards, Git Flow workflow, and quality gates)
 - Modified sections:
   * Technology Standards - Added devcontainer and Docker deployment requirements
-  * Development Workflow - Updated to Git Flow branching model (master/develop/feature/release/hotfix)
+  * Development Workflow - Updated to Git Flow branching model + mandatory pre-PR linting/testing
 - Added sections:
   * Deployment Standards - New section for Docker/Unraid deployment requirements
 - Changes summary:
@@ -12,20 +12,24 @@ Sync Impact Report:
   * Added: Unraid deployment standards and Community Applications template requirement
   * Changed: Branch workflow from simple feature branches to full Git Flow model
   * Added: Explicit Git Flow branch types (feature/*, release/*, hotfix/*)
+  * Added: develop-gitflow-docker as integration branch, master as production
+  * Added: Mandatory pre-PR linting (GitHub-compatible) with auto-fix requirement
+  * Added: Mandatory pre-PR testing - all tests must pass before PR creation
   * Added: Branch merge rules for Git Flow (feature→develop, release→master+develop)
 - Removed sections: none
 - Templates requiring updates:
-  ✅ plan-template.md - Updated branch naming to feature/*, added deployment check, version ref to v1.2.0
-  ✅ spec-template.md - Updated branch naming to feature/*
-  ✅ tasks-template.md - No changes needed, execution context independent
-  ✅ agent-file-template.md - No changes needed
+  ✅ plan-template.md - Update branch naming to feature/*, add deployment check, add lint/test gates
+  ✅ spec-template.md - Update branch naming to feature/*
+  ✅ tasks-template.md - Add lint/test tasks before PR creation
+  ⚠ Constitution version updated to v1.2.0
 - Command prompts reviewed:
   ✅ All prompts - Compatible with Git Flow workflow
 - Follow-up TODOs:
   * Create .devcontainer configuration
   * Create Dockerfile with multi-stage build
   * Create Unraid template XML
-  * Update branch protection to cover both master and develop branches
+  * Apply branch protection to develop-gitflow-docker branch
+  * Set up GitHub Actions for automated linting and testing
 -->
 
 # TelegramYtDlpBot Constitution
@@ -67,11 +71,11 @@ All development MUST occur within VS Code devcontainers to ensure consistent dev
 
 ## Development Workflow
 
-Development follows the Git Flow branching model with `master` as the production branch and `develop` as the integration branch. Feature development MUST occur on `feature/*` branches created from `develop`. Release preparation MUST use `release/*` branches. Hotfixes for production issues MUST use `hotfix/*` branches from `master`. NO changes SHALL be committed directly to `master` or `develop` - all work MUST go through the branch and merge workflow.
+Development follows the Git Flow branching model with `master` as the production branch and `develop-gitflow-docker` as the integration branch. Feature development MUST occur on `feature/*` branches created from develop. Release preparation MUST use `release/*` branches. Hotfixes for production issues MUST use `hotfix/*` branches from `master`. NO changes SHALL be committed directly to `master` or `develop-gitflow-docker` - all work MUST go through the branch and merge workflow.
 
-Pull requests MUST include test coverage reports and pass all automated checks before merge. Code reviews are REQUIRED and MUST verify adherence to all constitutional principles. All PR conversations MUST be resolved before merge approval. Feature branches merge to `develop`, releases merge to both `master` and `develop`, hotfixes merge to both `master` and `develop`. Database schema changes MUST include migration scripts and rollback procedures.
+Before creating any pull request, ALL GitHub-compatible linting MUST be run and all issues MUST be auto-fixed or manually resolved. ALL tests MUST pass locally before the PR is initiated. Pull requests MUST include test coverage reports and pass all automated checks before merge. Code reviews are REQUIRED and MUST verify adherence to all constitutional principles. All PR conversations MUST be resolved before merge approval. Feature branches merge to develop, releases merge to both `master` and develop, hotfixes merge to both `master` and develop. Database schema changes MUST include migration scripts and rollback procedures.
 
-**Rationale**: Git Flow provides clear separation between development, release prep, and production code. Branch protection prevents accidental corruption, ensures peer review, and maintains a clean, auditable history.
+**Rationale**: Git Flow provides clear separation between development, release prep, and production code. Pre-PR linting and testing catches issues early and reduces review cycles. Branch protection prevents accidental corruption, ensures peer review, and maintains a clean, auditable history.
 
 ## Deployment Standards
 

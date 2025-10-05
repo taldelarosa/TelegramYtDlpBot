@@ -53,6 +53,7 @@
 - **Performance Requirements**: ✅ <5s standard ops, <30s downloads, memory bounded, optimized queries
 - **User Experience Consistency**: ✅ Consistent commands, status updates, help text, data persistence
 - **Deployment Standards**: ✅ Docker containerized, Unraid compatible, health checks, env config
+- **Pre-PR Quality Gates**: ✅ All linting run and auto-fixed, all tests passing before PR
 
 ## Project Structure
 
