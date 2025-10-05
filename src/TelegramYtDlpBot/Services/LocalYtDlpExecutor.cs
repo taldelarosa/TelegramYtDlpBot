@@ -1,5 +1,7 @@
 using System.Diagnostics;
+using System.Security.Cryptography;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace TelegramYtDlpBot.Services;
 
@@ -9,11 +11,13 @@ namespace TelegramYtDlpBot.Services;
 public class LocalYtDlpExecutor : IYtDlpExecutor
 {
     private readonly string _executablePath;
+    private readonly ILogger<LocalYtDlpExecutor>? _logger;
     private const int TimeoutSeconds = 3600; // 1 hour default timeout
 
-    public LocalYtDlpExecutor(string? executablePath = null)
+    public LocalYtDlpExecutor(string? executablePath = null, ILogger<LocalYtDlpExecutor>? logger = null)
     {
         _executablePath = executablePath ?? "yt-dlp";
+        _logger = logger;
     }
 
     /// <inheritdoc />
@@ -85,11 +89,36 @@ public class LocalYtDlpExecutor : IYtDlpExecutor
             }
 
             // Parse output to find the downloaded file path
-            var outputFilePath = ExtractDownloadedFilePath(stdOutput.ToString(), outputPath);
+            var ytDlpOutput = stdOutput.ToString();
+            var ytDlpError = stdError.ToString();
             
-            if (string.IsNullOrEmpty(outputFilePath) || !File.Exists(outputFilePath))
+            var outputFilePath = ExtractDownloadedFilePath(ytDlpOutput, outputPath);
+            
+            if (string.IsNullOrEmpty(outputFilePath))
             {
-                throw new YtDlpException("Download completed but output file not found");
+                var errorDetails = $"Could not parse output file path from yt-dlp.\n" +
+                                  $"Output directory: {outputPath}\n" +
+                                  $"yt-dlp stdout:\n{ytDlpOutput}\n" +
+                                  $"yt-dlp stderr:\n{ytDlpError}";
+                throw new YtDlpException($"Download completed but output file path not found. {errorDetails}");
+            }
+            
+            // If file doesn't exist, it might be because yt-dlp skipped it (already downloaded)
+            if (!File.Exists(outputFilePath))
+            {
+                // Check if yt-dlp said it was already downloaded
+                if (ytDlpOutput.Contains("has already been downloaded", StringComparison.OrdinalIgnoreCase))
+                {
+                    _logger?.LogInformation("Duplicate video request detected for URL: {Url} - File already exists at: {FilePath}", url, outputFilePath);
+                    // File was already downloaded, which is fine - return the expected path
+                    return outputFilePath;
+                }
+                
+                var errorDetails = $"File does not exist at path: {outputFilePath}\n" +
+                                  $"Output directory: {outputPath}\n" +
+                                  $"yt-dlp stdout:\n{ytDlpOutput}\n" +
+                                  $"yt-dlp stderr:\n{ytDlpError}";
+                throw new YtDlpException($"Download completed but output file not found. {errorDetails}");
             }
 
             return outputFilePath;
@@ -175,7 +204,17 @@ public class LocalYtDlpExecutor : IYtDlpExecutor
                 {
                     var filePath = match.Groups[1].Value.Trim();
                     
-                    // If it's a relative path, combine with output directory
+                    // Check if the path already starts with the output directory name
+                    // yt-dlp outputs relative paths like "downloads\file.mp4" when we pass "./downloads" as output path
+                    var outputDirName = Path.GetFileName(Path.GetFullPath(outputDirectory));
+                    if (filePath.StartsWith(outputDirName + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase) ||
+                        filePath.StartsWith(outputDirName + Path.AltDirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+                    {
+                        // The path already includes the output directory, just use it directly
+                        return filePath;
+                    }
+                    
+                    // If it's a relative path that doesn't include the directory, combine with output directory
                     if (!Path.IsPathRooted(filePath))
                     {
                         filePath = Path.Combine(outputDirectory, filePath);
@@ -190,11 +229,11 @@ public class LocalYtDlpExecutor : IYtDlpExecutor
         // This is a best-effort approach if we can't parse the output
         try
         {
-            var files = Directory.GetFiles(outputDirectory, "*.*", SearchOption.TopDirectoryOnly);
+            var files = Directory.GetFiles(outputDirectory, "*.*", SearchOption.AllDirectories);
             if (files.Length > 0)
             {
-                // Return the most recently created file
-                return files.OrderByDescending(f => File.GetCreationTime(f)).FirstOrDefault();
+                // Return the most recently modified file (more reliable than creation time)
+                return files.OrderByDescending(f => File.GetLastWriteTimeUtc(f)).FirstOrDefault();
             }
         }
         catch
@@ -203,5 +242,72 @@ public class LocalYtDlpExecutor : IYtDlpExecutor
         }
 
         return null;
+    }
+    
+    /// <summary>
+    /// Compute MD5 hash of a file.
+    /// </summary>
+    private static string ComputeFileHash(string filePath)
+    {
+        using var md5 = MD5.Create();
+        using var stream = File.OpenRead(filePath);
+        var hashBytes = md5.ComputeHash(stream);
+        return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+    }
+    
+    /// <summary>
+    /// Check if two files have the same content based on MD5 hash.
+    /// </summary>
+    private static bool AreFilesIdentical(string filePath1, string filePath2)
+    {
+        if (!File.Exists(filePath1) || !File.Exists(filePath2))
+            return false;
+            
+        // Quick check: if sizes are different, files are different
+        var fileInfo1 = new FileInfo(filePath1);
+        var fileInfo2 = new FileInfo(filePath2);
+        if (fileInfo1.Length != fileInfo2.Length)
+            return false;
+            
+        // Compare MD5 hashes
+        return ComputeFileHash(filePath1) == ComputeFileHash(filePath2);
+    }
+    
+    /// <summary>
+    /// Handle duplicate filename by comparing content and renaming if needed.
+    /// Returns the final file path to use.
+    /// </summary>
+    private static string HandleDuplicateFile(string originalPath, string newFilePath)
+    {
+        if (!File.Exists(originalPath))
+        {
+            // No duplicate, just return the new path
+            return newFilePath;
+        }
+        
+        // Check if files are identical
+        if (AreFilesIdentical(originalPath, newFilePath))
+        {
+            // Same content, delete the new file and return the original path
+            if (File.Exists(newFilePath) && newFilePath != originalPath)
+            {
+                File.Delete(newFilePath);
+            }
+            return originalPath;
+        }
+        
+        // Different content, rename the new file with a GUID
+        var directory = Path.GetDirectoryName(newFilePath) ?? "./";
+        var fileNameWithoutExt = Path.GetFileNameWithoutExtension(newFilePath);
+        var extension = Path.GetExtension(newFilePath);
+        var uniqueFileName = $"{fileNameWithoutExt}_{Guid.NewGuid():N}{extension}";
+        var uniquePath = Path.Combine(directory, uniqueFileName);
+        
+        if (File.Exists(newFilePath) && newFilePath != uniquePath)
+        {
+            File.Move(newFilePath, uniquePath);
+        }
+        
+        return uniquePath;
     }
 }

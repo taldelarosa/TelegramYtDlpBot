@@ -52,7 +52,8 @@ builder.Services.AddSingleton<IUrlExtractor, UrlExtractor>();
 
 builder.Services.AddSingleton<IYtDlpExecutor>(sp =>
 {
-    return new LocalYtDlpExecutor(botConfig.YtDlp.ExecutablePath);
+    var logger = sp.GetRequiredService<ILogger<LocalYtDlpExecutor>>();
+    return new LocalYtDlpExecutor(botConfig.YtDlp.ExecutablePath, logger);
 });
 
 builder.Services.AddSingleton<ITelegramMonitor>(sp =>
@@ -69,16 +70,18 @@ builder.Services.AddHostedService(sp =>
     var urlExtractor = sp.GetRequiredService<IUrlExtractor>();
     var queue = sp.GetRequiredService<IDownloadQueue>();
     var executor = sp.GetRequiredService<IYtDlpExecutor>();
+    var stateManager = sp.GetRequiredService<IStateManager>();
     var logger = sp.GetRequiredService<ILogger<DownloadWorker>>();
-    return new DownloadWorker(monitor, urlExtractor, queue, executor, logger, botConfig.Storage.DownloadPath);
+    return new DownloadWorker(monitor, urlExtractor, queue, executor, stateManager, logger, botConfig.Storage.DownloadPath);
 });
 
-// Register health check endpoint
-builder.Services.AddHostedService(sp =>
-{
-    var logger = sp.GetRequiredService<ILogger<HealthCheckService>>();
-    return new HealthCheckService(logger, port: 8080);
-});
+// Register health check endpoint (commented out - requires admin rights on Windows)
+// Uncomment this when running as administrator or on Linux
+// builder.Services.AddHostedService(sp =>
+// {
+//     var logger = sp.GetRequiredService<ILogger<HealthCheckService>>();
+//     return new HealthCheckService(logger, port: 8080);
+// });
 
 // Build and run
 var app = builder.Build();

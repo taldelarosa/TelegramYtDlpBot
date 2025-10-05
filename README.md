@@ -14,11 +14,76 @@ A Telegram bot that monitors a channel for messages containing video URLs and au
 
 ## Prerequisites
 
-- .NET 8 SDK
-- PowerShell (for setup script)
+- .NET 8 SDK (for local development)
+- **OR** Docker and Docker Compose (for containerized deployment)
+- PowerShell (for setup script, local development only)
 - Telegram Bot Token (from [@BotFather](https://t.me/botfather))
 
 ## Quick Start
+
+### Option A: Docker (Recommended for Production/Unraid)
+
+#### 1. Create Environment File
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and set your values:
+
+```bash
+BOT_TOKEN=your_bot_token_here
+CHANNEL_ID=-1001234567890
+```
+
+#### 2. Build and Run with Docker Compose
+
+```bash
+docker-compose up -d
+```
+
+The bot will:
+- Automatically download yt-dlp during build
+- Store the database in `./data/state.db`
+- Save downloads to `./downloads/`
+- Restart automatically unless stopped
+
+#### 3. Check Logs
+
+```bash
+docker-compose logs -f telegram-ytdlp-bot
+```
+
+#### 4. Stop the Bot
+
+```bash
+docker-compose down
+```
+
+#### Unraid Deployment
+
+For Unraid servers:
+
+1. Navigate to **Docker** tab in Unraid UI
+2. Click **Add Container**
+3. Configure with these settings:
+   - **Name**: `telegram-ytdlp-bot`
+   - **Repository**: Build the image first or use your own registry
+   - **Network Type**: `bridge`
+   - **Port Mappings**: None required (bot doesn't expose ports)
+   - **Path Mappings**:
+     - Container Path: `/app/data` → Host Path: `/mnt/user/appdata/telegram-ytdlp-bot/data`
+     - Container Path: `/app/downloads` → Host Path: `/mnt/user/downloads/telegram-videos`
+   - **Environment Variables**:
+     - `BOT_TOKEN`: Your bot token
+     - `CHANNEL_ID`: Your channel ID
+     - `DOTNET_ENVIRONMENT`: `Production`
+
+Alternatively, use the Community Applications plugin and search for "telegram-ytdlp-bot" (if published).
+
+### Option B: Local Development
+
+### Option B: Local Development
 
 ### 1. Download yt-dlp
 
@@ -148,6 +213,22 @@ The bot will start monitoring your channel and processing video URLs automatical
 
 ## Development
 
+### Building Docker Image Locally
+
+```bash
+docker build -t telegram-ytdlp-bot:latest .
+```
+
+### Running with Custom Configuration
+
+You can override settings using environment variables in docker-compose.yml:
+
+```yaml
+environment:
+  - BotConfiguration__YtDlp__Quality=1080p
+  - BotConfiguration__YtDlp__OutputTemplate=%(title)s.%(ext)s
+```
+
 ### Running Tests
 
 ```powershell
@@ -206,6 +287,23 @@ Response:
 
 ## Troubleshooting
 
+### Docker Issues
+
+**Container won't start:**
+- Check logs: `docker-compose logs telegram-ytdlp-bot`
+- Verify `.env` file exists with correct values
+- Ensure volumes have correct permissions
+
+**Downloads not persisting:**
+- Check volume mounts in `docker-compose.yml`
+- Verify host directories exist and are writable
+- On Unraid, ensure paths are under `/mnt/user/`
+
+**Container can't connect to Telegram:**
+- Verify `BOT_TOKEN` is correct
+- Check firewall rules allow outbound HTTPS
+- Ensure DNS resolution is working in container
+
 ### Bot Not Starting
 
 - Verify your bot token is correct in `appsettings.json`
@@ -227,6 +325,14 @@ Response:
 ## License
 
 This project is provided as-is for educational and personal use.
+
+## Additional Documentation
+
+- **[DOCKER.md](DOCKER.md)** - Complete Docker reference and configuration guide
+- **[UNRAID.md](UNRAID.md)** - Step-by-step Unraid server deployment guide
+- **[DOCKER-SUMMARY.md](DOCKER-SUMMARY.md)** - Quick Docker overview and next steps
+- **[DEPLOYMENT-CHECKLIST.md](DEPLOYMENT-CHECKLIST.md)** - Comprehensive deployment checklist
+- **[QUICK-REFERENCE.md](QUICK-REFERENCE.md)** - Essential commands and troubleshooting
 
 ## Contributing
 

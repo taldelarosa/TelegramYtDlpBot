@@ -10,7 +10,7 @@ namespace TelegramYtDlpBot.Services;
 /// <summary>
 /// Monitors a Telegram channel for new messages and manages emoji reactions.
 /// </summary>
-public class TelegramMonitor : ITelegramMonitor
+public class TelegramMonitor : ITelegramMonitor, IUpdateHandler
 {
     private readonly ITelegramBotClient? _botClient;
     private readonly ILogger<TelegramMonitor>? _logger;
@@ -55,20 +55,19 @@ public class TelegramMonitor : ITelegramMonitor
         var receiverOptions = new ReceiverOptions
         {
             AllowedUpdates = new[] { UpdateType.Message, UpdateType.ChannelPost },
-            ThrowPendingUpdates = true
+            DropPendingUpdates = true
         };
 
         try
         {
             // Test connection
-            var me = await _botClient.GetMeAsync(cancellationToken);
+            var me = await _botClient.GetMe(cancellationToken);
             _logger?.LogInformation("Connected as bot: {BotUsername}", me.Username);
             _isConnected = true;
 
             // Start receiving updates
             await _botClient.ReceiveAsync(
-                updateHandler: HandleUpdateAsync,
-                pollingErrorHandler: HandleErrorAsync,
+                updateHandler: this,
                 receiverOptions: receiverOptions,
                 cancellationToken: cancellationToken
             );
@@ -92,22 +91,49 @@ public class TelegramMonitor : ITelegramMonitor
             return false;
         }
 
-        // Note: Telegram.Bot 19.0.0 doesn't support SetMessageReactionAsync yet
-        // This is a placeholder that logs the intent but always returns false
-        _logger?.LogDebug("Would set reaction {Emoji} on message {MessageId} (not yet supported)", emoji, messageId);
-        
-        await Task.CompletedTask; // Satisfy async requirement
-        return false; // Reactions not yet supported in this version
+        try
+        {
+            await _botClient.SetMessageReaction(
+                chatId: _channelId,
+                messageId: (int)messageId,
+                reaction: new[] { new ReactionTypeEmoji { Emoji = emoji } },
+                cancellationToken: cancellationToken
+            );
+            _logger?.LogDebug("Set reaction {Emoji} on message {MessageId}", emoji, messageId);
+            return true;
+        }
+        catch (ApiRequestException ex) when (ex.Message.Contains("message not found") || ex.Message.Contains("MESSAGE_NOT_FOUND"))
+        {
+            _logger?.LogWarning("Message {MessageId} not found for reaction {Emoji}", messageId, emoji);
+            return false;
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogWarning(ex, "Failed to set reaction {Emoji} on message {MessageId}", emoji, messageId);
+            return false;
+        }
     }
 
-    private Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+    Task IUpdateHandler.HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
         try
         {
+            // Debug: Log all updates received
+            _logger?.LogDebug("Update received: Type={UpdateType}, Id={UpdateId}", update.Type, update.Id);
+            
             // Handle channel posts or regular messages
             var message = update.ChannelPost ?? update.Message;
             
-            if (message == null || message.Chat.Id != _channelId)
+            if (message == null)
+            {
+                _logger?.LogDebug("No message in update");
+                return Task.CompletedTask;
+            }
+            
+            _logger?.LogDebug("Message from chat {ChatId} (expected {ExpectedChannelId}), Type={MessageType}", 
+                message.Chat.Id, _channelId, message.Chat.Type);
+            
+            if (message.Chat.Id != _channelId)
             {
                 return Task.CompletedTask;
             }
@@ -137,7 +163,7 @@ public class TelegramMonitor : ITelegramMonitor
         return Task.CompletedTask;
     }
 
-    private Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
+    Task IUpdateHandler.HandleErrorAsync(ITelegramBotClient botClient, Exception exception, HandleErrorSource source, CancellationToken cancellationToken)
     {
         var errorMessage = exception switch
         {

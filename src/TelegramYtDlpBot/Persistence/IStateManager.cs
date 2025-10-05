@@ -43,7 +43,7 @@ public interface IStateManager : IDisposable
     /// <summary>
     /// Records that a message has been processed.
     /// </summary>
-    Task SaveProcessedMessageAsync(long messageId, long channelId, CancellationToken cancellationToken = default);
+    Task SaveProcessedMessageAsync(long messageId, long channelId, int urlCount, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets an application state value by key.

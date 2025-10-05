@@ -1,0 +1,45 @@
+# Build artifacts
+bin/
+obj/
+out/
+publish/
+
+# User-specific files
+*.user
+*.userosstate
+*.suo
+
+# IDE files
+.vs/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Data and downloads (these should be mounted as volumes)
+data/
+downloads/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+LICENSE
+
+# Tests
+tests/
+*.Tests/
+
+# CI/CD
+.github/
+
+# Tools (yt-dlp will be downloaded in the container)
+tools/

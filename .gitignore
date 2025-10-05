@@ -53,3 +53,6 @@ data/
 
 ## Sensitive configuration (use appsettings.json.template instead)
 src/TelegramYtDlpBot/appsettings.json
+
+## Docker environment files (use .env.example instead)
+.env

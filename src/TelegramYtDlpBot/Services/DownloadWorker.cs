@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using TelegramYtDlpBot.Persistence;
 
 namespace TelegramYtDlpBot.Services;
 
@@ -17,6 +18,7 @@ public class DownloadWorker : BackgroundService
     private readonly IUrlExtractor _urlExtractor;
     private readonly IDownloadQueue _queue;
     private readonly IYtDlpExecutor _executor;
+    private readonly IStateManager _stateManager;
     private readonly ILogger<DownloadWorker> _logger;
     private readonly string _outputPath;
 
@@ -25,6 +27,7 @@ public class DownloadWorker : BackgroundService
         IUrlExtractor urlExtractor,
         IDownloadQueue queue,
         IYtDlpExecutor executor,
+        IStateManager stateManager,
         ILogger<DownloadWorker> logger,
         string outputPath = "/downloads")
     {
@@ -32,6 +35,7 @@ public class DownloadWorker : BackgroundService
         _urlExtractor = urlExtractor ?? throw new ArgumentNullException(nameof(urlExtractor));
         _queue = queue ?? throw new ArgumentNullException(nameof(queue));
         _executor = executor ?? throw new ArgumentNullException(nameof(executor));
+        _stateManager = stateManager ?? throw new ArgumentNullException(nameof(stateManager));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _outputPath = outputPath;
     }
@@ -78,8 +82,8 @@ public class DownloadWorker : BackgroundService
                     // Mark job as in progress
                     await _queue.MarkInProgressAsync(job.JobId, stoppingToken);
 
-                    // Set processing emoji (⚙️)
-                    await _monitor.SetReactionAsync(job.MessageId, "⚙️", stoppingToken);
+                    // Set processing emoji (🔥)
+                    await _monitor.SetReactionAsync(job.MessageId, "🔥", stoppingToken);
 
                     try
                     {
@@ -89,8 +93,8 @@ public class DownloadWorker : BackgroundService
                         // Mark completed
                         await _queue.MarkCompletedAsync(job.JobId, outputFile, stoppingToken);
 
-                        // Set success emoji (✅)
-                        await _monitor.SetReactionAsync(job.MessageId, "✅", stoppingToken);
+                        // Set success emoji (👍)
+                        await _monitor.SetReactionAsync(job.MessageId, "👍", stoppingToken);
 
                         _logger.LogInformation("Job {JobId} completed successfully: {OutputFile}", job.JobId, outputFile);
                     }
@@ -114,8 +118,8 @@ public class DownloadWorker : BackgroundService
                         }
                         else
                         {
-                            // Max retries exceeded, set error emoji (❌)
-                            await _monitor.SetReactionAsync(job.MessageId, "❌", stoppingToken);
+                            // Max retries exceeded, set error emoji (👎)
+                            await _monitor.SetReactionAsync(job.MessageId, "👎", stoppingToken);
                             _logger.LogWarning("Job {JobId} failed after max retries", job.JobId);
                         }
                     }
@@ -157,6 +161,9 @@ public class DownloadWorker : BackgroundService
             }
 
             _logger.LogInformation("Found {Count} URL(s) in message {MessageId}", urls.Count, e.MessageId);
+
+            // Record this message as processed (required for foreign key constraint)
+            await _stateManager.SaveProcessedMessageAsync(e.MessageId, e.ChannelId, urls.Count, CancellationToken.None);
 
             // Set "seen" emoji (👀)
             await _monitor.SetReactionAsync(e.MessageId, "👀", CancellationToken.None);

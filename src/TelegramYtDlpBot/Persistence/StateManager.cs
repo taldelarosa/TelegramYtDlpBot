@@ -202,11 +202,11 @@ public class StateManager : IStateManager
         return result != null;
     }
 
-    public async Task SaveProcessedMessageAsync(long messageId, long channelId, CancellationToken cancellationToken = default)
+    public async Task SaveProcessedMessageAsync(long messageId, long channelId, int urlCount, CancellationToken cancellationToken = default)
     {
         const string sql = @"
-            INSERT OR IGNORE INTO ProcessedMessages (MessageId, ChannelId, ProcessedAt)
-            VALUES (@MessageId, @ChannelId, @ProcessedAt);";
+            INSERT OR IGNORE INTO ProcessedMessages (MessageId, ChannelId, ProcessedAt, UrlCount)
+            VALUES (@MessageId, @ChannelId, @ProcessedAt, @UrlCount);";
 
         await using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync(cancellationToken);
@@ -216,6 +216,7 @@ public class StateManager : IStateManager
         command.Parameters.AddWithValue("@MessageId", messageId);
         command.Parameters.AddWithValue("@ChannelId", channelId);
         command.Parameters.AddWithValue("@ProcessedAt", DateTime.UtcNow.ToString("O"));
+        command.Parameters.AddWithValue("@UrlCount", urlCount);
 
         await command.ExecuteNonQueryAsync(cancellationToken);
     }
