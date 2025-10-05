@@ -9,11 +9,26 @@ public class YtDlpExecutorTests
     // Get the path to yt-dlp.exe relative to the test project
     private static string GetYtDlpPath()
     {
-        // From tests/TelegramYtDlpBot.Tests/bin/Debug/net8.0 -> tools/yt-dlp.exe
-        var solutionDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
-        return Path.Combine(solutionDir, "tools", "yt-dlp.exe");
+        // Search upward from the current directory for tools/yt-dlp.exe
+        var exePath = FindUpward("tools/yt-dlp.exe", AppContext.BaseDirectory);
+        if (exePath == null)
+            throw new FileNotFoundException("Could not find yt-dlp.exe in any parent directory.");
+        return exePath;
     }
 
+    // Helper method to search upward for a file
+    private static string? FindUpward(string relativePath, string startDirectory)
+    {
+        var dir = new DirectoryInfo(startDirectory);
+        while (dir != null)
+        {
+            var candidate = Path.Combine(dir.FullName, relativePath);
+            if (File.Exists(candidate))
+                return candidate;
+            dir = dir.Parent;
+        }
+        return null;
+    }
     [Fact]
     public async Task DownloadAsync_WithValidUrl_ReturnsFilePath()
     {
