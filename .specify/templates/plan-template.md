@@ -1,7 +1,7 @@
 
 # Implementation Plan: [FEATURE]
 
-**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
+**Branch**: `feature/[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
 **Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
 
 ## Execution Flow (/plan command scope)
@@ -52,6 +52,8 @@
 - **Security First**: ✅ No secrets in git, input validation, auth/authz implemented
 - **Performance Requirements**: ✅ <5s standard ops, <30s downloads, memory bounded, optimized queries
 - **User Experience Consistency**: ✅ Consistent commands, status updates, help text, data persistence
+- **Deployment Standards**: ✅ Docker containerized, Unraid compatible, health checks, env config
+- **Pre-PR Quality Gates**: ✅ All linting run and auto-fixed, all tests passing before PR
 
 ## Project Structure
 
@@ -220,4 +222,4 @@ directories captured above]
 - [ ] Complexity deviations documented
 
 ---
-*Based on Constitution v1.1.0 - See `/memory/constitution.md`*
+*Based on Constitution v1.2.0 - See `/memory/constitution.md`*

@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A4863E7D-EF3B-4A4B-8767-EB1529A777D0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramYtDlpBot", "src\TelegramYtDlpBot\TelegramYtDlpBot.csproj", "{B9374534-B718-4D12-BB04-AE46E59D2C7F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E1AFCDDF-82D3-4FCD-8A8C-677F580DD533}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramYtDlpBot.Tests", "tests\TelegramYtDlpBot.Tests\TelegramYtDlpBot.Tests.csproj", "{B7C18E10-6C80-4B68-BF87-B2E3A23AA17D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B9374534-B718-4D12-BB04-AE46E59D2C7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9374534-B718-4D12-BB04-AE46E59D2C7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9374534-B718-4D12-BB04-AE46E59D2C7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9374534-B718-4D12-BB04-AE46E59D2C7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7C18E10-6C80-4B68-BF87-B2E3A23AA17D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7C18E10-6C80-4B68-BF87-B2E3A23AA17D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7C18E10-6C80-4B68-BF87-B2E3A23AA17D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7C18E10-6C80-4B68-BF87-B2E3A23AA17D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B9374534-B718-4D12-BB04-AE46E59D2C7F} = {A4863E7D-EF3B-4A4B-8767-EB1529A777D0}
+		{B7C18E10-6C80-4B68-BF87-B2E3A23AA17D} = {E1AFCDDF-82D3-4FCD-8A8C-677F580DD533}
+	EndGlobalSection
+EndGlobal

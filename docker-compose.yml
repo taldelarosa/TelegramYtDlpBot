@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  telegram-ytdlp-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: telegram-ytdlp-bot
+    restart: unless-stopped
+    environment:
+      - DOTNET_ENVIRONMENT=Production
+      - BotConfiguration__BotToken=${BOT_TOKEN}
+      - BotConfiguration__ChannelId=${CHANNEL_ID}
+      - BotConfiguration__YtDlp__ExecutablePath=/usr/local/bin/yt-dlp
+      - BotConfiguration__Database__Path=/app/data/state.db
+      - BotConfiguration__Downloads__OutputPath=/app/downloads
+    volumes:
+      # Data persistence (SQLite database)
+      - ./data:/app/data
+      # Downloaded videos
+      - ./downloads:/app/downloads
+      # Optional: Custom appsettings (uncomment if needed)
+      # - ./appsettings.Production.json:/app/appsettings.Production.json:ro
+    networks:
+      - telegram-bot-network
+    # Optional: Resource limits for Unraid
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+networks:
+  telegram-bot-network:
+    driver: bridge

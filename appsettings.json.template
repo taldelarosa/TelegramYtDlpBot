@@ -1,0 +1,37 @@
+{
+  "BotConfiguration": {
+    "Telegram": {
+      "BotToken": "YOUR_BOT_TOKEN_HERE",
+      "ChannelId": 0,
+      "PollingIntervalSeconds": 2
+    },
+    "YtDlp": {
+      "Mode": "Local",
+      "ExecutablePath": "yt-dlp",
+      "Quality": "bestvideo+bestaudio/best",
+      "OutputTemplate": "%(uploader)s/%(upload_date)s/%(title)s.%(ext)s",
+      "TimeoutMinutes": 60
+    },
+    "Storage": {
+      "DownloadPath": "./downloads",
+      "DatabasePath": "./data/state.db",
+      "MinimumFreeSpaceGB": 1
+    },
+    "Emojis": {
+      "Seen": "👀",
+      "Processing": "⚙️",
+      "Complete": "✅",
+      "Error": "❌"
+    },
+    "Logging": {
+      "MinimumLevel": "Information"
+    }
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    }
+  }
+}

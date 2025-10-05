@@ -76,11 +76,22 @@
 - [ ] T022 Remove duplication
 - [ ] T023 Run manual-testing.md
 
+## Phase 3.6: Pre-PR Quality Gates (REQUIRED before PR creation)
+**CRITICAL: ALL must pass before creating pull request**
+- [ ] T024 Run all GitHub-compatible linters (e.g., dotnet format, PSScriptAnalyzer)
+- [ ] T025 Auto-fix all linting issues or manually resolve unfixable items
+- [ ] T026 Run complete test suite and verify 100% pass
+- [ ] T027 Verify test coverage meets minimum threshold
+- [ ] T028 Review and commit all linting fixes
+- [ ] T029 Final verification: clean lint + passing tests
+
 ## Dependencies
 - Tests (T004-T007) before implementation (T008-T014)
 - T008 blocks T009, T015
 - T016 blocks T018
 - Implementation before polish (T019-T023)
+- Polish before Pre-PR Quality Gates (T024-T029)
+- ALL Quality Gates (T024-T029) MUST pass before PR creation
 
 ## Parallel Example
 ```

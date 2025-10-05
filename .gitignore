@@ -1,0 +1,58 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.log
+
+## Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+## Visual Studio
+.vs/
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json
+
+## User-specific files
+*.rsuser
+*.user
+*.userosscache
+*.sln.docstates
+
+## Test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.trx
+*.coverage
+*.coveragexml
+
+## Development settings
+appsettings.Development.json
+
+## Application data
+downloads/
+data/
+*.db
+*.db-shm
+*.db-wal
+
+## Sensitive configuration (use appsettings.json.template instead)
+src/TelegramYtDlpBot/appsettings.json
+
+## Docker environment files (use .env.example instead)
+.env
