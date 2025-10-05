@@ -239,9 +239,9 @@ public class StateManager : IStateManager
     public async Task SetStateValueAsync(string key, string value, CancellationToken cancellationToken = default)
     {
         const string sql = @"
-            INSERT INTO AppState (Key, Value, UpdatedAt)
-            VALUES (@Key, @Value, @UpdatedAt)
-            ON CONFLICT(Key) DO UPDATE SET Value = @Value, UpdatedAt = @UpdatedAt;";
+            INSERT INTO AppState (Key, Value)
+            VALUES (@Key, @Value)
+            ON CONFLICT(Key) DO UPDATE SET Value = @Value;";
 
         await using var connection = new SqliteConnection(_connectionString);
         await connection.OpenAsync(cancellationToken);
@@ -250,7 +250,6 @@ public class StateManager : IStateManager
         command.CommandText = sql;
         command.Parameters.AddWithValue("@Key", key);
         command.Parameters.AddWithValue("@Value", value);
-        command.Parameters.AddWithValue("@UpdatedAt", DateTime.UtcNow.ToString("O"));
 
         await command.ExecuteNonQueryAsync(cancellationToken);
     }
