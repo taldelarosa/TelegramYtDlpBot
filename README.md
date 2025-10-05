@@ -39,8 +39,10 @@ CHANNEL_ID=-1001234567890
 #### 2. Build and Run with Docker Compose
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
+
+> **Note for Unraid users:** Use `docker compose` (with a space) instead of `docker-compose` (with a hyphen). Unraid uses Docker Compose V2 plugin.
 
 The bot will:
 - Automatically download yt-dlp during build
@@ -51,13 +53,13 @@ The bot will:
 #### 3. Check Logs
 
 ```bash
-docker-compose logs -f telegram-ytdlp-bot
+docker compose logs -f telegram-ytdlp-bot
 ```
 
 #### 4. Stop the Bot
 
 ```bash
-docker-compose down
+docker compose down
 ```
 
 #### Unraid Deployment

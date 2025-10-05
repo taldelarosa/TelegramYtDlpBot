@@ -14,7 +14,7 @@ This guide explains how to deploy the Telegram YT-DLP Bot on your Unraid server.
 
 3. Clone or copy the repository:
    ```bash
-   git clone https://github.com/yourusername/TelegramYtDlpBot.git
+   git clone https://github.com/taldelarosa/TelegramYtDlpBot.git
    cd TelegramYtDlpBot
    ```
 
@@ -44,13 +44,15 @@ chmod -R 777 data downloads
 ### Step 4: Build and Run
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
+
+**Note:** Unraid uses Docker Compose V2 (the `docker compose` plugin), not the older standalone `docker-compose`. If you get a "command not found" error, make sure you're using `docker compose` (with a space) instead of `docker-compose` (with a hyphen).
 
 ### Step 5: Verify It's Running
 
 ```bash
-docker-compose logs -f
+docker compose logs -f
 ```
 
 You should see:
@@ -63,23 +65,23 @@ info: Starting Telegram monitoring for channel -1001234567890
 
 **View logs:**
 ```bash
-docker-compose logs -f telegram-ytdlp-bot
+docker compose logs -f telegram-ytdlp-bot
 ```
 
 **Restart:**
 ```bash
-docker-compose restart
+docker compose restart
 ```
 
 **Stop:**
 ```bash
-docker-compose down
+docker compose down
 ```
 
 **Update and restart:**
 ```bash
 git pull
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 ## Method 2: Using Unraid Docker UI
@@ -174,9 +176,9 @@ The container downloads yt-dlp during build. To update:
 1. Rebuild the container:
    ```bash
    cd /mnt/user/appdata/TelegramYtDlpBot
-   docker-compose down
-   docker-compose build --no-cache
-   docker-compose up -d
+   docker compose down
+   docker compose build --no-cache
+   docker compose up -d
    ```
 
 ### Monitoring Downloads
