@@ -11,10 +11,10 @@ namespace TelegramYtDlpBot.Services;
 public class LocalYtDlpExecutor : IYtDlpExecutor
 {
     private readonly string _executablePath;
-    private readonly ILogger<LocalYtDlpExecutor> _logger;
+    private readonly ILogger<LocalYtDlpExecutor>? _logger;
     private const int TimeoutSeconds = 3600; // 1 hour default timeout
 
-    public LocalYtDlpExecutor(string? executablePath = null, ILogger<LocalYtDlpExecutor> logger)
+    public LocalYtDlpExecutor(string? executablePath = null, ILogger<LocalYtDlpExecutor>? logger = null)
     {
         _executablePath = executablePath ?? "yt-dlp";
         _logger = logger;
